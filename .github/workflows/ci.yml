@@ -1,0 +1,41 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.15.0'
+      - run: npm run verify
+      - run: npm run demo:live -- --check
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t incident-lens:test .
+      - name: Authenticated container smoke test
+        shell: bash
+        run: |
+          token=$(openssl rand -hex 32)
+          echo "::add-mask::$token"
+          docker run -d --name incident-lens -p 127.0.0.1:3000:3000 -e API_TOKEN="$token" -e APP_ORIGIN=http://127.0.0.1:3000 incident-lens:test
+          trap 'docker logs incident-lens; docker rm -f incident-lens' EXIT
+          for attempt in {1..20}; do
+            if curl -fsS http://127.0.0.1:3000/health/ready; then break; fi
+            sleep 1
+          done
+          curl -fsS -H "Authorization: Bearer $token" http://127.0.0.1:3000/api/info
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/incidents)" = 401

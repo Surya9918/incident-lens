@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="IncidentLens — evidence-backed incident diagnosis"><title>IncidentLens · Incident intelligence</title><link rel="stylesheet" href="/style.css"><script src="/app.js" type="module"></script></head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="IncidentLens home"><span class="logo">◈</span> INCIDENT<span>LENS</span></a>
+    <p class="eyebrow">OPERATIONS INTELLIGENCE</p>
+    <div class="nav-label"><span class="green-dot"></span> Incident workspace <span class="tag">01</span></div>
+    <div class="section-label">RECENT INVESTIGATIONS <button id="refresh" class="icon-btn" aria-label="Refresh investigations">↻</button></div>
+    <nav id="history" aria-label="Recent incidents"><p class="muted small">Connect to load investigations.</p></nav>
+    <button id="more" class="secondary hidden">Load older investigations</button>
+    <div class="sidebar-footer"><span class="eyebrow">EXPLAINABLE BY DESIGN</span><p>Every hypothesis has a trail.<br>Follow the evidence.</p><button id="connect" class="secondary">API connection</button><p id="connection" class="small muted">Connecting…</p></div>
+  </aside>
+  <main>
+    <header><div><span class="eyebrow">WORKSPACE / INVESTIGATIONS</span><h1>Find the signal.<br><span class="muted-heading">Understand the incident.</span></h1></div><div class="live-label"><span class="green-dot"></span> LOCAL ANALYSIS <span class="version">v1.0</span></div></header>
+    <section class="toolbar" aria-label="Investigation actions"><div><strong>Start an investigation</strong><p class="muted small">Import telemetry or explore a labeled synthetic incident.</p></div><div class="actions"><label class="secondary upload">Import JSON<input id="upload" type="file" accept=".json,application/json" hidden></label><button id="healthy" class="secondary">Healthy example</button><button id="demo" class="primary">Investigate a fault <span>↗</span></button></div></section>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <section id="empty" class="empty"><div class="empty-mark">⌁</div><h2>Evidence before action.</h2><p>Bring metrics, logs and service dependencies together.<br>IncidentLens ranks likely causes and shows its reasoning.</p><div class="empty-steps"><span>01 / Detect anomalies</span><span>02 / Connect dependencies</span><span>03 / Inspect evidence</span></div><p class="small muted">No external AI provider. No automatic remediation. Your telemetry stays on this server.</p></section>
+    <div id="investigation" class="hidden">
+      <section class="incident-title"><div><span class="eyebrow" id="incident-id"></span><h2 id="title"></h2><p class="muted small" id="window"></p></div><div class="actions"><span id="status" class="status"></span><button id="download" class="secondary">Export report</button><button id="delete" class="danger">Delete</button></div></section>
+      <section class="summary-grid"><article class="stat"><span class="eyebrow">LEADING HYPOTHESIS</span><strong id="lead">—</strong><span class="muted small">Investigate before acting</span></article><article class="stat"><span class="eyebrow">AFFECTED SERVICES</span><strong id="affected">—</strong><span class="muted small">Sustained metric anomalies</span></article><article class="stat"><span class="eyebrow">EVIDENCE CITATIONS</span><strong id="citations">—</strong><span class="muted small">Logs & request traces</span></article><article class="stat"><span class="eyebrow">RANKING MODEL</span><strong class="small-stat">Listwise logistic</strong><span class="muted small">Synthetic training · interpretable</span></article></section>
+      <p id="summary" class="diagnosis"></p><p id="truth" class="demo-truth hidden"></p>
+      <section class="analysis-grid">
+        <article class="panel graph-panel"><div class="panel-heading"><div><span class="eyebrow">01 / SYSTEM CONTEXT</span><h3>Service dependencies</h3></div><span class="small muted">Caller → dependency</span></div><svg id="graph" viewBox="0 0 620 300" role="img" aria-label="Service dependency graph"></svg><div class="legend"><span><i class="legend-root"></i> Leading hypothesis</span><span><i class="legend-alert"></i> Anomalous</span><span><i class="legend-normal"></i> No sustained anomaly</span></div></article>
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">02 / LIKELY CAUSES</span><h3>Ranked hypotheses</h3></div></div><div id="candidates"></div><p class="small muted footnote">Weights compare candidates within this incident. They are not calibrated probabilities.</p></article>
+      </section>
+      <section class="analysis-grid"><article class="panel"><div class="panel-heading"><div><span class="eyebrow">03 / TEMPORAL SIGNAL</span><h3 id="chart-title">Latency timeline</h3></div><span class="small muted">Milliseconds</span></div><svg id="chart" viewBox="0 0 620 200" role="img" aria-label="Latency over time"></svg><p class="small muted">Dashed line marks the end of the supplied healthy baseline.</p></article><article class="panel"><div class="panel-heading"><div><span class="eyebrow">04 / MODEL REASONING</span><h3>Feature contributions</h3></div></div><div id="features"></div><p class="small muted">Signed contributions to the selected candidate’s raw ranking score; not causal effects.</p></article></section>
+      <section class="panel"><div class="panel-heading"><div><span class="eyebrow">05 / AUDIT TRAIL</span><h3>Supporting evidence</h3></div><span id="evidence-count" class="tag"></span></div><div id="evidence" class="evidence"></div></section>
+      <section class="limitations"><h3>Interpretation & limits</h3><ul id="limitations"></ul></section>
+    </div>
+    <footer>INCIDENTLENS <span>Built for investigation. Decisions stay with you.</span></footer>
+  </main>
+  <dialog id="auth-dialog"><form id="auth-form"><span class="eyebrow">SERVER CONNECTION</span><h2>Connect securely</h2><p>Enter the server’s API token. It stays in memory and is cleared when this page reloads.</p><label for="token">API token</label><input id="token" type="password" autocomplete="off" spellcheck="false" maxlength="512"><p class="small muted">Local development without authentication can leave this empty.</p><div class="actions"><button id="cancel-auth" type="button" class="secondary">Cancel</button><button type="submit" class="primary">Connect</button></div></form></dialog>
+</body></html>
