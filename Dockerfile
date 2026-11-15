@@ -1,9 +1,9 @@
-FROM node:24.15.0-bookworm-slim AS verify
+FROM node:26.13.1-bookworm-slim AS verify
 WORKDIR /app
 COPY . .
 RUN npm run verify
 
-FROM node:24.15.0-bookworm-slim
+FROM node:26.13.1-bookworm-slim
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 DB_PATH=/app/data/incidents.db DEMO_ENABLED=false
 WORKDIR /app
 COPY --from=verify --chown=node:node /app/src ./src
